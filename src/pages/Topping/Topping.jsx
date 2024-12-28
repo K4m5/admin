@@ -155,41 +155,84 @@ const Topping = () => {
           </div>
           <nav>
             <ul className="pagination">
+              {/* Previous Button */}
               <li className={`page-item ${!prev ? "disabled" : ""}`}>
                 <button
                   className="page-link"
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={!prev}
+                  aria-label="Previous"
                 >
-                  Prev
+                  <span aria-hidden="true">&laquo; Prev</span>
                 </button>
               </li>
-              {[...Array(totalPages)].map((_, index) => (
-                <li
-                  key={index}
-                  className={`page-item ${
-                    index + 1 === currentPage ? "active" : ""
-                  }`}
-                >
-                  <button
-                    className="page-link"
-                    onClick={() => handlePageChange(index + 1)}
-                  >
-                    {index + 1}
-                  </button>
-                </li>
-              ))}
+
+              {/* Numbered Pages */}
+              {currentPage > 2 && (
+                <>
+                  <li className="page-item">
+                    <button className="page-link" onClick={() => handlePageChange(1)}>
+                      1
+                    </button>
+                  </li>
+                  {currentPage > 3 && (
+                    <li className="page-item disabled">
+                      <span className="page-link">...</span>
+                    </li>
+                  )}
+                </>
+              )}
+
+              {Array.from({ length: 3 }, (_, i) => {
+                const pageNumber = currentPage - 1 + i;
+                if (pageNumber > 0 && pageNumber <= totalPages) {
+                  return (
+                    <li
+                      key={pageNumber}
+                      className={`page-item ${
+                        pageNumber === currentPage ? "active" : ""
+                      }`}
+                    >
+                      <button
+                        className="page-link"
+                        onClick={() => handlePageChange(pageNumber)}
+                      >
+                        {pageNumber}
+                      </button>
+                    </li>
+                  );
+                }
+                return null;
+              })}
+
+              {currentPage < totalPages - 1 && (
+                <>
+                  {currentPage < totalPages - 2 && (
+                    <li className="page-item disabled">
+                      <span className="page-link">...</span>
+                    </li>
+                  )}
+                  <li className="page-item">
+                    <button className="page-link" onClick={() => handlePageChange(totalPages)}>
+                      {totalPages}
+                    </button>
+                  </li>
+                </>
+              )}
+
               <li className={`page-item ${!next ? "disabled" : ""}`}>
                 <button
                   className="page-link"
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={!next}
+                  aria-label="Next"
                 >
-                  Next
+                  <span aria-hidden="true">Next &raquo;</span>
                 </button>
               </li>
             </ul>
           </nav>
+
           {/* Modal */}
           {showModal && (
             <div

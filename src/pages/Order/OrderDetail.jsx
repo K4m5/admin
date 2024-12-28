@@ -66,6 +66,10 @@ const OrderDetail = () => {
                     <strong>Tổng tiền:</strong>{" "}
                     {formatMoney(order?.order?.amount)}
                   </p>
+                  <p>
+                    <strong>Mã giảm giá:</strong>{" "}
+                    {order?.order?.coupon}
+                  </p>
                 </div>
                 <div className="col-md-6">
                   <h5>Thông tin người đặt</h5>

@@ -206,36 +206,78 @@ const Foods = () => {
                   className="page-link"
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={!prev}
+                  aria-label="Previous"
                 >
-                  Prev
+                  <span aria-hidden="true">Prev</span>
                 </button>
               </li>
-              {[...Array(totalPages)].map((_, index) => (
-                <li
-                  key={index}
-                  className={`page-item ${
-                    index + 1 === currentPage ? "active" : ""
-                  }`}
-                >
-                  <button
-                    className="page-link"
-                    onClick={() => handlePageChange(index + 1)}
-                  >
-                    {index + 1}
-                  </button>
-                </li>
-              ))}
+
+              {currentPage > 2 && (
+                <>
+                  <li className="page-item">
+                    <button className="page-link" onClick={() => handlePageChange(1)}>
+                      1
+                    </button>
+                  </li>
+                  {currentPage > 3 && (
+                    <li className="page-item disabled">
+                      <span className="page-link">...</span>
+                    </li>
+                  )}
+                </>
+              )}
+
+              {/* Trang hiện tại và các trang xung quanh */}
+              {Array.from({ length: 3 }, (_, i) => {
+                const pageNumber = currentPage - 1 + i;
+                if (pageNumber > 0 && pageNumber <= totalPages) {
+                  return (
+                    <li
+                      key={pageNumber}
+                      className={`page-item ${
+                        pageNumber === currentPage ? "active" : ""
+                      }`}
+                    >
+                      <button
+                        className="page-link"
+                        onClick={() => handlePageChange(pageNumber)}
+                      >
+                        {pageNumber}
+                      </button>
+                    </li>
+                  );
+                }
+                return null;
+              })}
+
+              {currentPage < totalPages - 1 && (
+                <>
+                  {currentPage < totalPages - 2 && (
+                    <li className="page-item disabled">
+                      <span className="page-link">...</span>
+                    </li>
+                  )}
+                  <li className="page-item">
+                    <button className="page-link" onClick={() => handlePageChange(totalPages)}>
+                      {totalPages}
+                    </button>
+                  </li>
+                </>
+              )}
+
               <li className={`page-item ${!next ? "disabled" : ""}`}>
                 <button
                   className="page-link"
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={!next}
+                  aria-label="Next"
                 >
-                  Next
+                  <span aria-hidden="true">Next</span>
                 </button>
               </li>
             </ul>
           </nav>
+
           <div
             className={`modal fade ${showModal ? "show" : ""}`}
             style={{ display: showModal ? "block" : "none" }}

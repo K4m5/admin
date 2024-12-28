@@ -10,8 +10,10 @@ const Order = () => {
   const dispatch = useDispatch();
   const { orders } = useSelector((state) => state.orders);
   const currentPage = useSelector((state) => state.orders.currentPage);
+  const totalPages = useSelector((state) => state.orders.totalPages);
   const [searchQuery, setSearchQuery] = useState("");
   const [orderStatuses, setOrderStatuses] = useState({});
+  const [selectedStatus, setSelectedStatus] = useState("all");
 
   useEffect(() => {
     dispatch(fetchOrder({ page: currentPage, limit: 10 }));
@@ -21,7 +23,12 @@ const Order = () => {
     setSearchQuery(e.target.value);
   };
 
-  const filterOrder = orders.filter((item) => item?.code.includes(searchQuery));
+  const filterOrder = orders.filter((item) => {
+    const matchesSearch = item?.code.includes(searchQuery);
+    const matchesStatus =
+      selectedStatus === "all" || item?.status === selectedStatus;
+    return matchesSearch && matchesStatus;
+  });
 
   const handleStatusChange = (orderId, newStatus) => {
     setOrderStatuses((prevStatuses) => ({
@@ -43,6 +50,16 @@ const Order = () => {
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      dispatch(fetchOrder({ page, limit: 10 }));
+    }
+  };
+
+  const handleStatusFilterChange = (e) => {
+    setSelectedStatus(e.target.value); // Cập nhật trạng thái được chọn
   };
 
   return (
@@ -72,6 +89,25 @@ const Order = () => {
                     </div>
                   </div>
                 </div>
+                <div className="card-tools mr-2">
+                  <div
+                    className="input-group input-group-sm"
+                    style={{ width: "200px" }}
+                  >
+                    <select 
+                      className="form-control"
+                      value={selectedStatus}
+                      onChange={handleStatusFilterChange}
+                    >
+                      <option hidden>--Chọn Trạng Thái--</option>
+                      <option value="all">Tất cả trạng thái</option>
+                      <option value="Pending">Đang duyệt</option>
+                      <option value="Processing">Đang xử lý</option>
+                      <option value="Cancelled">Đã hủy</option>
+                      <option value="Completed">Hoàn thành</option>
+                    </select>
+                  </div>
+                </div>
               </div>
               <div className="card-body">
                 <div className="table-responsive">
@@ -82,6 +118,9 @@ const Order = () => {
                         <th>Người dùng</th>
                         <th>Số điện thoại</th>
                         <th>Trạng thái</th>
+                        <th>Ngày Đặt</th>
+                        <th>Phí Giao</th>
+                        <th>Thanh Toán</th>
                         <th>Hành động</th>
                       </tr>
                     </thead>
@@ -106,6 +145,15 @@ const Order = () => {
                             </select>
                           </td>
                           <td>
+                            {new Date(order?.created_at).toLocaleString()}
+                          </td>
+                          <td>
+                            {(order.ship ? order.ship : 0).toLocaleString()}đ
+                          </td>
+                          <td>
+                            {order.payment == "Cod" ? "Tiền Mặt" : "Chuyển Khoản"}
+                          </td>
+                          <td>
                             <button
                               className="btn btn-primary"
                               onClick={() => handleStatusUpdate(order?._id)}
@@ -125,6 +173,95 @@ const Order = () => {
                     </tbody>
                   </table>
                 </div>
+                
+                <nav>
+                  <ul className="pagination">
+                    {/* Nút Prev */}
+                    <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+                      <button
+                        className="page-link"
+                        onClick={() => handlePageChange(currentPage - 1)}
+                        disabled={currentPage === 1}
+                      >
+                        Prev
+                      </button>
+                    </li>
+
+                    {/* Nút Đầu Tiên và Dấu `...` */}
+                    {currentPage > 2 && (
+                      <>
+                        <li className="page-item">
+                          <button className="page-link" onClick={() => handlePageChange(1)}>
+                            1
+                          </button>
+                        </li>
+                        {currentPage > 3 && (
+                          <li className="page-item disabled">
+                            <span className="page-link">...</span>
+                          </li>
+                        )}
+                      </>
+                    )}
+
+                    {/* Trang Lân Cận Trang Hiện Tại */}
+                    {Array.from({ length: 3 }, (_, i) => {
+                      const pageNumber = currentPage - 1 + i;
+                      if (pageNumber > 0 && pageNumber <= totalPages) {
+                        return (
+                          <li
+                            key={pageNumber}
+                            className={`page-item ${
+                              currentPage === pageNumber ? "active" : ""
+                            }`}
+                          >
+                            <button
+                              className="page-link"
+                              onClick={() => handlePageChange(pageNumber)}
+                            >
+                              {pageNumber}
+                            </button>
+                          </li>
+                        );
+                      }
+                      return null;
+                    })}
+
+                    {/* Dấu `...` và Nút Cuối */}
+                    {currentPage < totalPages - 1 && (
+                      <>
+                        {currentPage < totalPages - 2 && (
+                          <li className="page-item disabled">
+                            <span className="page-link">...</span>
+                          </li>
+                        )}
+                        <li className="page-item">
+                          <button
+                            className="page-link"
+                            onClick={() => handlePageChange(totalPages)}
+                          >
+                            {totalPages}
+                          </button>
+                        </li>
+                      </>
+                    )}
+
+                    {/* Nút Next */}
+                    <li
+                      className={`page-item ${
+                        currentPage === totalPages ? "disabled" : ""
+                      }`}
+                    >
+                      <button
+                        className="page-link"
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                      >
+                        Next
+                      </button>
+                    </li>
+                  </ul>
+                </nav>
+
               </div>
             </div>
           </div>

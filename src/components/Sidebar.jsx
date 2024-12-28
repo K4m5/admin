@@ -33,18 +33,6 @@ const Sidebar = () => {
               </Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to={"/provinces"}>
-                <i className="nav-icon fas fa-map-marker"></i>
-                <p>Tỉnh</p>
-              </Link>
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link" to={"/districts"}>
-                <i className="nav-icon fas fa-building"></i>
-                <p>Thành phố</p>
-              </Link>
-            </li>
-            <li className="nav-item">
               <Link className="nav-link" to={"/contact"}>
                 <i className="nav-icon fas fa-address-book"></i>
                 <p>Liên hệ</p>

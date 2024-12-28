@@ -37,7 +37,7 @@ const AddFood = () => {
         ...prevData,
         [id]: file,
       }));
-      setImagePreview(URL.createObjectURL(file));
+      setImagePreview(URL.createObjectURL(file)); // Tạo URL tạm thời để xem trước
     } else {
       setFormData((prevData) => ({
         ...prevData,
