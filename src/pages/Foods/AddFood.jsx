@@ -62,11 +62,11 @@ const AddFood = () => {
       !formData.cooking_time ||
       !formData.type
     ) {
-      setErrorMessage("All fields are required.");
+      setErrorMessage("Vui lòng điền đầy đủ thông tin");
       return false;
     }
     if (formData.price <= 0 || formData.cooking_time <= 0) {
-      setErrorMessage("Price and Cooking Time must be greater than zero.");
+      setErrorMessage("Giá và thời gian nấu phải lớn hơn 0");
 
       return false;
     }

@@ -15,6 +15,7 @@ const FoodTopping = () => {
 
   const location = useLocation();
   let foodId = location.state.foodId;
+  console.log(foodId)
 
   const [searchQuery, setSearchQuery] = useState("");
   const [showModal, setShowModal] = useState(false);
