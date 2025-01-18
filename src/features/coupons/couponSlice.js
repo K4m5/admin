@@ -60,10 +60,23 @@ export const deleteCoupon = createAsyncThunk(
   }
 );
 
+export const fetchCouponById = createAsyncThunk(
+  "coupons/fetchCouponById",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await baseApi.get(`/coupons/${id}`);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
 const couponSlice = createSlice({
   name: "coupons",
   initialState: {
     coupons: [],
+    coupon: null,
     status: "idle",
     error: null,
     currentPage: 1,
@@ -112,7 +125,19 @@ const couponSlice = createSlice({
         state.coupons = state.coupons.filter(
           (coupon) => coupon._id !== action.payload
         );
-      });
+      })
+      .addCase(fetchCouponById.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(fetchCouponById.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.coupon = action.payload;
+        console.log(action.payload)
+      })
+      .addCase(fetchCouponById.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      });   
   },
 });
 

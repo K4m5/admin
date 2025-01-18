@@ -5,12 +5,14 @@ import Spinner from "../../components/Spinner";
 import { fetchOrderDetail } from "../../features/order/orderSlice";
 import { fetchUserById } from "../../features/user/userSlice";
 import { formatMoney } from "../../utils/formatMoney";
+import { fetchCouponById } from "../../features/coupons/couponSlice";
 
 const OrderDetail = () => {
   const dispatch = useDispatch();
   const { id } = useParams();
   const { order, loading } = useSelector((state) => state.orders);
   const { user } = useSelector((state) => state.user);
+  const { coupon } = useSelector((state) => state.coupons);
   useEffect(() => {
     dispatch(fetchOrderDetail(id));
   }, [dispatch, id]);
@@ -20,6 +22,12 @@ const OrderDetail = () => {
       dispatch(fetchUserById(order?.order?.user));
     }
   }, [dispatch, order]);
+
+  useEffect(() => {
+    if (order?.order?.coupon) {
+      dispatch(fetchCouponById(order?.order?.coupon));
+    }
+  }, [dispatch, order?.order?.coupon]);
 
   if (loading) {
     return <Spinner />;
@@ -68,7 +76,7 @@ const OrderDetail = () => {
                   </p>
                   <p>
                     <strong>Mã giảm giá:</strong>{" "}
-                    {order?.order?.coupon}
+                    {coupon?.code ? coupon?.code : "Không có mã giảm giá"}
                   </p>
                 </div>
                 <div className="col-md-6">
